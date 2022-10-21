@@ -1324,39 +1324,6 @@
     <None Include="application_options.xml">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="data\textures\death_knight.png">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\fireatlas.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\loading3.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\logo5.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\pinksquare.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\planet1_None_BaseColor.png">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\planet1_None_Normal.png">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\planet1_None_OcclusionRoughnessMetallic.png">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\10.dds">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\11.dds">
-      <Filter>Resource Files\textures</Filter>
-    </None>
-    <None Include="data\textures\12.dds">
-      <Filter>Resource Files\textures</Filter>
-    </None>
     <None Include="data\actors\BasicTransformComponent.xml">
       <Filter>Resource Files\actors</Filter>
     </None>
@@ -1436,24 +1403,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="main_menu.xml" />
-    <None Include="data\textures\fancy-brass-pattern1_albedo.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="data\textures\fancy-brass-pattern1_ao.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="data\textures\fancy-brass-pattern1_height.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="data\textures\fancy-brass-pattern1_metallic.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="data\textures\fancy-brass-pattern1_normal-ogl.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="data\textures\fancy-brass-pattern1_roughness.png">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="data\objects\lpAsianTowerBlock.mtl" />
     <None Include="data\objects\lpAsianTowerBlock.obj" />
     <None Include="data\textures\ASIAN_TOWER_BLOCK_standardSurface1_BaseCol.png">
@@ -1587,5 +1536,8 @@
     <FxCompile Include="data\shaders\BaseInstanced_VS.hlsl" />
     <FxCompile Include="data\shaders\BasicShadow_VS.hlsl" />
     <FxCompile Include="data\shaders\BaseInstancedShadow_VS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\sound\Any_Act_-_Mashina_Pidar.mp3" />
   </ItemGroup>
 </Project>

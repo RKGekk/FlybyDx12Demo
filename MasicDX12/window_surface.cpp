@@ -61,35 +61,73 @@ bool WindowSurface::Initialize(const RenderWindowConfig& cfg) {
     int screen_width = GetSystemMetrics(SM_CXSCREEN);
     int screen_height = GetSystemMetrics(SM_CYSCREEN);
 
-    RECT window_rect = { 0, 0, static_cast<LONG>(m_client_width), static_cast<LONG>(m_client_height) };
-    AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
+    if (!cfg.is_windowed_mode) {
 
-    uint32_t width = window_rect.right - window_rect.left;
-    uint32_t height = window_rect.bottom - window_rect.top;
+        // If full screen set the screen to maximum size of the users desktop and 32bit.
+        DEVMODE dmScreenSettings;
+        memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+        dmScreenSettings.dmSize = sizeof(dmScreenSettings);
+        dmScreenSettings.dmPelsWidth = (unsigned long)m_client_width;
+        dmScreenSettings.dmPelsHeight = (unsigned long)m_client_height;
+        dmScreenSettings.dmBitsPerPel = 32;
+        dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-    int window_x = std::max<int>(0, (screen_width - (int)width) / 2);
-    int window_y = std::max<int>(0, (screen_height - (int)height) / 2);
+        // Change the display settings to full screen.
+        ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
-    DWORD style = WS_OVERLAPPEDWINDOW;
+        // Set the position of the window to the top left corner.
+        int posX = 0;
+        int posY = 0;
 
-    m_hwnd = CreateWindowExW(
-        NULL,
-        m_name.c_str(),
-        m_name.c_str(),
-        style,
-        window_x,
-        window_y,
-        width,
-        height,
-        NULL,
-        NULL,
-        cfg.hInstance,
-        NULL
-    );
-    assert(m_hwnd && "Failed to create window");
-    if (!m_hwnd) {
-        MessageBoxA(NULL, "Could not create the render window.", "Error", MB_OK | MB_ICONERROR);
-        return false;
+        // Create the window with the screen settings and get the handle to it.
+        m_hwnd = CreateWindowEx(
+            WS_EX_APPWINDOW,
+            m_name.c_str(),
+            m_name.c_str(),
+            WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP, // окно без рамки
+            //WS_OVERLAPPEDWINDOW,
+            posX,
+            posY,
+            m_client_width,
+            m_client_height,
+            NULL,
+            NULL,
+            cfg.hInstance,
+            NULL
+        );
+    }
+    else {
+
+        RECT window_rect = { 0, 0, static_cast<LONG>(m_client_width), static_cast<LONG>(m_client_height) };
+        AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+        uint32_t width = window_rect.right - window_rect.left;
+        uint32_t height = window_rect.bottom - window_rect.top;
+
+        int window_x = std::max<int>(0, (screen_width - (int)width) / 2);
+        int window_y = std::max<int>(0, (screen_height - (int)height) / 2);
+
+        DWORD style = WS_OVERLAPPEDWINDOW;
+
+        m_hwnd = CreateWindowExW(
+            NULL,
+            m_name.c_str(),
+            m_name.c_str(),
+            style,
+            window_x,
+            window_y,
+            width,
+            height,
+            NULL,
+            NULL,
+            cfg.hInstance,
+            NULL
+        );
+        assert(m_hwnd && "Failed to create window");
+        if (!m_hwnd) {
+            MessageBoxA(NULL, "Could not create the render window.", "Error", MB_OK | MB_ICONERROR);
+            return false;
+        }
     }
     m_dpi_scaling = GetDpiForWindow(m_hwnd) / 96.0f;
     VRegisterEvents();
@@ -444,6 +482,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
                 c = static_cast<unsigned int>(charMsg.wParam);
             }
 
+            if ((GetAsyncKeyState(VK_ESCAPE) & 0x8000) != 0) {
+                Application::Get().DestroyWindowByHWND(hwnd);
+            }
+
             bool shift = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
             bool control = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
             bool alt = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
@@ -575,6 +617,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         break;
         case WM_DESTROY: {
             Application::Get().DestroyWindowByHWND(hwnd);
+        }
+        break;
+        case WM_QUIT: {
+            //Application::Get().DestroyWindowByHWND(hwnd);
         }
         break;
         default:

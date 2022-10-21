@@ -2,6 +2,7 @@
 
 #include "../events/evt_data_os_message.h"
 #include "../events/evt_data_update_tick.h"
+#include "../events/evt_data_window_close.h"
 #include "../graphics/d3d12_renderer.h"
 #include "../graphics/directx12_wrappers/command_queue.h"
 #include "../graphics/directx12_wrappers/command_list.h"
@@ -9,6 +10,8 @@
 #include "../graphics/directx12_wrappers/texture.h"
 
 #include "../application.h"
+
+#include <Mmsystem.h>
 
 std::shared_ptr<Engine> Engine::m_pEngine = nullptr;
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -49,6 +52,13 @@ bool Engine::Initialize(const RenderWindowConfig& cfg) {
 	m_game = VCreateGameAndView();
 	if (!m_game) return false;
 
+	LPCWSTR a = L"open data/sound/Any_Act_-_Mashina_Pidar.mp3 type mpegvideo";
+	int error = 99;
+	error = mciSendString(a, NULL, 0, 0);
+	int error2;
+	LPCWSTR b = L"play data/sound/Any_Act_-_Mashina_Pidar.mp3";
+	error2 = mciSendString(b, NULL, 0, 0);
+
 	return true;
 }
 
@@ -74,8 +84,21 @@ bool Engine::ProcessMessages() {
 void Engine::Update(IEventDataPtr pEventData) {
 	std::shared_ptr<EvtData_Update_Tick> pCastEventData = std::static_pointer_cast<EvtData_Update_Tick>(pEventData);
 	if (m_game) {
-		IEventManager::Get()->VUpdate();
 		GameTimer& timer = Application::Get().GetTimer();
+		if (timer.fGetTotalSeconds() > 34.0f) {
+			static bool posted = false;
+			if (!posted) {
+				//Application::Get().Stop();
+				std::shared_ptr<D3DRenderer12> renderer = std::dynamic_pointer_cast<D3DRenderer12>(GetRenderer());
+				Application::Get().DestroyWindowByHWND(renderer->GetRenderWindow()->GetHWND());
+				posted = true;
+			}
+			//std::shared_ptr<D3DRenderer12> renderer = std::dynamic_pointer_cast<D3DRenderer12>(GetRenderer());
+			//renderer->GetRenderWindow()->OnClose(true);
+			//std::shared_ptr<EvtData_Window_Close> pEvent = std::make_shared<EvtData_Window_Close>(renderer->GetRenderWindow()->GetHWND(), true);
+			//IEventManager::Get()->VTriggerEvent(pEvent);
+		}
+		IEventManager::Get()->VUpdate();
 		m_game->VOnUpdate(timer);
 	}
 }
